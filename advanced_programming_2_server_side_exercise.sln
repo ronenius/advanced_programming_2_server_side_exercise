@@ -1,13 +1,75 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32319.34
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "advanced-programming-2-server-side-exercise", "advanced-programming-2-server-side-exercise.csproj", "{A4A197A1-F866-4235-B29E-01F5D9AC0C48}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assignment 1", "assignment 1", "{B142FA57-1357-4316-9271-16162771EA91}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assignment 2", "assignment 2", "{BB44B443-0E67-4244-BB12-2E25DDB35933}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "client-side-web", "client-side-web", "{0492E39E-68EF-457C-A7D2-B23C6BAC8776}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BA23BE24-03DF-441D-9F43-649513C45AC2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\AddContact.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\AddContact.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\AddMessage.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\AddMessage.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\apiCommunication.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\apiCommunication.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\App.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\App.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Attachment.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Attachment.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\chatManagement.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\chatManagement.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\chatPadding.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\chatPadding.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\CheckLogIn.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\CheckLogIn.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\CheckRegister.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\CheckRegister.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\ConnectToMain.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\ConnectToMain.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\contactUsername.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\contactUsername.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\DataBase.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\DataBase.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\index.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\index.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\index.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\index.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InitializeContacts.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InitializeContacts.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\initUser.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\initUser.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InputImage.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InputImage.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InputImage.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InputImage.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InsertPictrues.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\InsertPictrues.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\lastMessage.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\lastMessage.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Login.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Login.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Login.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Login.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\MainPage.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\MainPage.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\MainPage.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\MainPage.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\record.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\record.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Register.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Register.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Register.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Register.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\SearchContact.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\SearchContact.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\searchMessageManagement.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\searchMessageManagement.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\sendImage.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\sendImage.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\sendMessageButton.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\sendMessageButton.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\speechBubble.css = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\speechBubble.css
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\timeWriter.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\timeWriter.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\updateChatBoard.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\updateChatBoard.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\UserIdx.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\UserIdx.js
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\VideoButton.js = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\VideoButton.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pictures", "Pictures", "{76692FD9-FA01-4938-A6AB-EE19C80FC969}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\add_contact.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\add_contact.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\add_contact2.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\add_contact2.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\addContactPicture.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\addContactPicture.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\addImage.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\addImage.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\addVideo.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\addVideo.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\Attachment.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\Attachment.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\contactPicture.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\contactPicture.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\goodvideo.mp4 = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\goodvideo.mp4
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\logo.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\logo.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\pageBackground.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\pageBackground.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\pi.txt = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\pi.txt
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\record.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\record.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\recording.mp3 = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\recording.mp3
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\sendMessage.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\sendMessage.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\ShlomysPicture.png = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\ShlomysPicture.png
+		..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\whatsappBackground.jpg = ..\..\..\AdvancedPrograming2\Project2\Advanced-Programming-2-Project\client-side-web\src\Pictures\whatsappBackground.jpg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +87,9 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A4A197A1-F866-4235-B29E-01F5D9AC0C48} = {BB44B443-0E67-4244-BB12-2E25DDB35933}
+		{0492E39E-68EF-457C-A7D2-B23C6BAC8776} = {B142FA57-1357-4316-9271-16162771EA91}
+		{BA23BE24-03DF-441D-9F43-649513C45AC2} = {0492E39E-68EF-457C-A7D2-B23C6BAC8776}
+		{76692FD9-FA01-4938-A6AB-EE19C80FC969} = {BA23BE24-03DF-441D-9F43-649513C45AC2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {86DFD7A5-BAD4-4BEF-9531-0D6582928580}
