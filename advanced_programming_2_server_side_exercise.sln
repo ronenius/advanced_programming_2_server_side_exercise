@@ -5,6 +5,10 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "advanced-programming-2-server-side-exercise", "advanced-programming-2-server-side-exercise.csproj", "{A4A197A1-F866-4235-B29E-01F5D9AC0C48}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assignment 1", "assignment 1", "{B142FA57-1357-4316-9271-16162771EA91}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assignment 2", "assignment 2", "{BB44B443-0E67-4244-BB12-2E25DDB35933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +22,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A4A197A1-F866-4235-B29E-01F5D9AC0C48} = {BB44B443-0E67-4244-BB12-2E25DDB35933}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {86DFD7A5-BAD4-4BEF-9531-0D6582928580}
