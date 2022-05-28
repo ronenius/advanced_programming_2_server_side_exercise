@@ -10,6 +10,8 @@ using advanced_programming_2_server_side_exercise.Models;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
+    [ApiController]
+    [Route("api/Messages")]
     public class MessagesController : Controller
     {
         private readonly advanced_programming_2_server_side_exerciseContext _context;
@@ -20,9 +22,10 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         }
 
         // GET: Messages
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(int? id)
         {
-              return View(await _context.Message.ToListAsync());
+              
         }
 
         // GET: Messages/Details/5

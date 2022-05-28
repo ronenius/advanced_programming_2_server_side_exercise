@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.12bcc0fa.css",
+    "main.js": "/static/js/main.69ecadb1.js",
+    "static/media/pi.txt": "/static/media/pi.63cba5f3e79dfc3dc24d.txt",
+    "static/media/pageBackground.png": "/static/media/pageBackground.2404e7952673b949beb4.png",
+    "static/media/add_contact2.png": "/static/media/add_contact2.7b9ab3e471e83d091396.png",
+    "static/media/whatsappBackground.jpg": "/static/media/whatsappBackground.80632fbdf7ba487e67f6.jpg",
+    "static/media/ShlomysPicture.png": "/static/media/ShlomysPicture.ad741fc1bb813d885dbe.png",
+    "static/media/goodvideo.mp4": "/static/media/goodvideo.64e21181d45117a3b593.mp4",
+    "static/media/recording.mp3": "/static/media/recording.623bdd67ce033181d587.mp3",
+    "static/media/logo.png": "/static/media/logo.3740aea670ab4909ef2c.png",
+    "static/media/addImage.png": "/static/media/addImage.d4841d6b8017d32e102e.png",
+    "static/media/addVideo.png": "/static/media/addVideo.63e030a98447160410f8.png",
+    "static/media/record.png": "/static/media/record.a6ae43e5c6a8a6d6ec0c.png",
+    "static/media/contactPicture.png": "/static/media/contactPicture.64514ba1f6b2cfd25a65.png",
+    "index.html": "/index.html",
+    "main.12bcc0fa.css.map": "/static/css/main.12bcc0fa.css.map",
+    "main.69ecadb1.js.map": "/static/js/main.69ecadb1.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.12bcc0fa.css",
+    "static/js/main.69ecadb1.js"
+  ]
+}

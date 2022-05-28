@@ -23,7 +23,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
 
         // GET: Contacts
         [HttpGet]
-        public async Task<List<ContactAPI>> Index()
+        public async Task<List<ContactAPI>> Get()
         {
             List<Contact> contacts = await _context.Contact.ToListAsync();
             List<ContactAPI> contactsApi = new List<ContactAPI>();
@@ -41,7 +41,37 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             }
             return contactsApi;
         }
-
+        [HttpGet("{id}")]
+        public async Task<ContactAPI> GetId(string id)
+        {
+            List<Contact> contacts = await _context.Contact.ToListAsync();
+            foreach (Contact contact in contacts)
+            {
+                if (contact.ContactUsername != id)
+                    continue;
+                List<Message> messages = contact.Messages;
+                string lastMessage = null;
+                DateTime? lastDate = null;
+                if (messages.Count > 0)
+                {
+                    lastMessage = messages[messages.Count - 1].Content;
+                    lastDate = messages[messages.Count - 1].Created;
+                }
+                return new ContactAPI(contact.ContactUsername, contact.ContactNickname, contact.ContactServer, lastMessage, lastDate);
+            }
+            //return error
+        }
+        [HttpPost]
+        public async Task<IActionReult> Post([Bind("id,name,server")] ContactAPI cont)
+        {
+            List<Contact> contacts = await _context.Contact.ToListAsync();
+            foreach (Contact contact in contacts)
+            {
+                if (contact.ContactUsername == cont.id) ;
+                    //return error
+            }
+            //add here;
+        }
         // GET: Contacts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
