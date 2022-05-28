@@ -13,6 +13,6 @@ namespace advanced_programming_2_server_side_exercise.Models
 
         public string ContactNickname { get; set; }
 
-        public List<Message> Messages { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

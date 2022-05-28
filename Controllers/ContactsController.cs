@@ -10,6 +10,8 @@ using advanced_programming_2_server_side_exercise.Models;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ContactsController : Controller
     {
         private readonly advanced_programming_2_server_side_exerciseContext _context;
@@ -20,9 +22,24 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         }
 
         // GET: Contacts
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<List<ContactAPI>> Index()
         {
-              return View(await _context.Contact.ToListAsync());
+            List<Contact> contacts = await _context.Contact.ToListAsync();
+            List<ContactAPI> contactsApi = new List<ContactAPI>();
+            foreach (Contact contact in contacts)
+            {
+                List<Message> messages = contact.Messages;
+                string lastMessage = null;
+                DateTime? lastDate = null;
+                if (messages.Count > 0)
+                {
+                    lastMessage = messages[messages.Count - 1].Content;
+                    lastDate = messages[messages.Count - 1].Created;
+                }
+                contactsApi.Add(new ContactAPI(contact.ContactUsername, contact.ContactNickname, contact.ContactServer, lastMessage, lastDate));
+            }
+            return contactsApi;
         }
 
         // GET: Contacts/Details/5
@@ -148,14 +165,14 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 _context.Contact.Remove(contact);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ContactExists(int id)
         {
-          return _context.Contact.Any(e => e.Id == id);
+            return _context.Contact.Any(e => e.Id == id);
         }
     }
 }

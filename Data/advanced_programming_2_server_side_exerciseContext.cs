@@ -14,7 +14,7 @@ namespace advanced_programming_2_server_side_exercise.Data
         {
         }
 
-        public DbSet<advanced_programming_2_server_side_exercise.Models.Message>? Message { get; set; }
+        public DbSet<advanced_programming_2_server_side_exercise.Models.Message> Message { get; set; }
 
         public DbSet<advanced_programming_2_server_side_exercise.Models.Contact> Contact { get; set; }
 
