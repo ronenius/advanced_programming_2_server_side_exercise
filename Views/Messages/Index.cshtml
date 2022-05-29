@@ -13,10 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Content)
+                @Html.DisplayNameFor(model => model.FromUsername)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsSent)
+                @Html.DisplayNameFor(model => model.ToUsername)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Created)
@@ -28,10 +31,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Content)
+                @Html.DisplayFor(modelItem => item.FromUsername)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsSent)
+                @Html.DisplayFor(modelItem => item.ToUsername)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Created)

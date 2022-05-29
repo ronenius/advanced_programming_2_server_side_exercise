@@ -7,10 +7,12 @@ namespace advanced_programming_2_server_side_exercise.Models
         [Key]
         public string Username { get; set; }
 
+        [Required]
         public string Password { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
-        public List<Contact> Contacts { get; set; }
+        public List<Contact> Contacts { get; set; } = new List<Contact>();
     }
 }

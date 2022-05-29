@@ -10,8 +10,6 @@ using advanced_programming_2_server_side_exercise.Models;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     public class ContactsController : Controller
     {
         private readonly advanced_programming_2_server_side_exerciseContext _context;
@@ -22,58 +20,13 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         }
 
         // GET: Contacts
-        [HttpGet]
-        public async Task<List<ContactAPI>> Get()
+        public async Task<IActionResult> Index()
         {
-            List<Contact> contacts = await _context.Contact.ToListAsync();
-            List<ContactAPI> contactsApi = new List<ContactAPI>();
-            foreach (Contact contact in contacts)
-            {
-                List<Message> messages = contact.Messages;
-                string lastMessage = null;
-                DateTime? lastDate = null;
-                if (messages.Count > 0)
-                {
-                    lastMessage = messages[messages.Count - 1].Content;
-                    lastDate = messages[messages.Count - 1].Created;
-                }
-                contactsApi.Add(new ContactAPI(contact.ContactUsername, contact.ContactNickname, contact.ContactServer, lastMessage, lastDate));
-            }
-            return contactsApi;
+              return View(await _context.Contact.ToListAsync());
         }
-        [HttpGet("{id}")]
-        public async Task<ContactAPI> GetId(string id)
-        {
-            List<Contact> contacts = await _context.Contact.ToListAsync();
-            foreach (Contact contact in contacts)
-            {
-                if (contact.ContactUsername != id)
-                    continue;
-                List<Message> messages = contact.Messages;
-                string lastMessage = null;
-                DateTime? lastDate = null;
-                if (messages.Count > 0)
-                {
-                    lastMessage = messages[messages.Count - 1].Content;
-                    lastDate = messages[messages.Count - 1].Created;
-                }
-                return new ContactAPI(contact.ContactUsername, contact.ContactNickname, contact.ContactServer, lastMessage, lastDate);
-            }
-            //return error
-        }
-        [HttpPost]
-        public async Task<IActionReult> Post([Bind("id,name,server")] ContactAPI cont)
-        {
-            List<Contact> contacts = await _context.Contact.ToListAsync();
-            foreach (Contact contact in contacts)
-            {
-                if (contact.ContactUsername == cont.id) ;
-                    //return error
-            }
-            //add here;
-        }
+
         // GET: Contacts/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null || _context.Contact == null)
             {
@@ -101,7 +54,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ContactUsername,ContactServer,ContactNickname")] Contact contact)
+        public async Task<IActionResult> Create([Bind("Id,ContactServer,ContactNickname")] Contact contact)
         {
             if (ModelState.IsValid)
             {
@@ -113,7 +66,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         }
 
         // GET: Contacts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null || _context.Contact == null)
             {
@@ -133,7 +86,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ContactUsername,ContactServer,ContactNickname")] Contact contact)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,ContactServer,ContactNickname")] Contact contact)
         {
             if (id != contact.Id)
             {
@@ -164,7 +117,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         }
 
         // GET: Contacts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null || _context.Contact == null)
             {
@@ -184,7 +137,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // POST: Contacts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (_context.Contact == null)
             {
@@ -195,14 +148,14 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 _context.Contact.Remove(contact);
             }
-
+            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ContactExists(int id)
+        private bool ContactExists(string id)
         {
-            return _context.Contact.Any(e => e.Id == id);
+          return _context.Contact.Any(e => e.Id == id);
         }
     }
 }

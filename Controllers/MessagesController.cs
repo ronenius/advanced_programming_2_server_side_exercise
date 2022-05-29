@@ -10,8 +10,6 @@ using advanced_programming_2_server_side_exercise.Models;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
-    [ApiController]
-    [Route("api/Messages")]
     public class MessagesController : Controller
     {
         private readonly advanced_programming_2_server_side_exerciseContext _context;
@@ -22,10 +20,9 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         }
 
         // GET: Messages
-        [HttpGet]
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index()
         {
-              
+              return View(await _context.Message.ToListAsync());
         }
 
         // GET: Messages/Details/5
@@ -57,7 +54,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Content,IsSent,Created")] Message message)
+        public async Task<IActionResult> Create([Bind("Id,FromUsername,ToUsername,Content,Created")] Message message)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +86,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Content,IsSent,Created")] Message message)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FromUsername,ToUsername,Content,Created")] Message message)
         {
             if (id != message.Id)
             {
