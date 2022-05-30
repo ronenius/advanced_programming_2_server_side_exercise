@@ -7,34 +7,34 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using advanced_programming_2_server_side_exercise.Data;
 using advanced_programming_2_server_side_exercise.Models;
+using advanced_programming_2_server_side_exercise.Services;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
     public class ContactsController : Controller
     {
-        private readonly advanced_programming_2_server_side_exerciseContext _context;
+        private readonly IContactService _service;
 
         public ContactsController(advanced_programming_2_server_side_exerciseContext context)
         {
-            _context = context;
+            _service = new ContactService(context);
         }
 
         // GET: Contacts
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Contact.ToListAsync());
+            return View(await _service.GetAll());
         }
 
         // GET: Contacts/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Contact == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contact
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var contact = await _service.Get(id);
             if (contact == null)
             {
                 return NotFound();
@@ -58,8 +58,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(contact);
-                await _context.SaveChangesAsync();
+                await _service.Create("ronen", contact.Id, contact.ContactServer, contact.ContactNickname);
                 return RedirectToAction(nameof(Index));
             }
             return View(contact);
@@ -68,12 +67,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Contacts/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Contact == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contact.FindAsync(id);
+            var contact = await _service.Get(id);
             if (contact == null)
             {
                 return NotFound();
@@ -97,12 +96,11 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 try
                 {
-                    _context.Update(contact);
-                    await _context.SaveChangesAsync();
+                    await _service.Edit(contact);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ContactExists(contact.Id))
+                    if (!await ContactExists(contact.Id))
                     {
                         return NotFound();
                     }
@@ -119,13 +117,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Contacts/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.Contact == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contact
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var contact = await _service.Get(id);
             if (contact == null)
             {
                 return NotFound();
@@ -139,23 +136,21 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Contact == null)
+            if (_service == null)
             {
                 return Problem("Entity set 'advanced_programming_2_server_side_exerciseContext.Contact'  is null.");
             }
-            var contact = await _context.Contact.FindAsync(id);
+            var contact = await _service.Get(id);
             if (contact != null)
             {
-                _context.Contact.Remove(contact);
+                await _service.Delete(id);
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ContactExists(string id)
+        private async Task<bool> ContactExists(string id)
         {
-          return _context.Contact.Any(e => e.Id == id);
+            return await _service.isIdExist(id);
         }
     }
 }

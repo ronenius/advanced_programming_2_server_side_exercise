@@ -7,34 +7,34 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using advanced_programming_2_server_side_exercise.Data;
 using advanced_programming_2_server_side_exercise.Models;
+using advanced_programming_2_server_side_exercise.Services;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly advanced_programming_2_server_side_exerciseContext _context;
+        private readonly IUserService _service;
 
         public UsersController(advanced_programming_2_server_side_exerciseContext context)
         {
-            _context = context;
+            _service = new UserService(context);
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
-              return View(await _context.User.ToListAsync());
+            return View(await _service.GetAll());
         }
 
         // GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Username == id);
+            var user = await _service.Get(id);
             if (user == null)
             {
                 return NotFound();
@@ -58,8 +58,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
+                await _service.Create(user.Username, user.Password, user.Name);
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
@@ -68,12 +67,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
+            var user = await _service.Get(id);
             if (user == null)
             {
                 return NotFound();
@@ -97,12 +96,11 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 try
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    await _service.Edit(user);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Username))
+                    if (!await UserExists(user.Username))
                     {
                         return NotFound();
                     }
@@ -119,13 +117,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Username == id);
+            var user = await _service.Get(id);
             if (user == null)
             {
                 return NotFound();
@@ -139,23 +136,22 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.User == null)
+            if (_service == null)
             {
                 return Problem("Entity set 'advanced_programming_2_server_side_exerciseContext.User'  is null.");
             }
-            var user = await _context.User.FindAsync(id);
+            var user = await _service.Get(id);
             if (user != null)
             {
-                _context.User.Remove(user);
+                await _service.Delete(id);
             }
-            
-            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserExists(string id)
+        private async Task<bool> UserExists(string id)
         {
-          return _context.User.Any(e => e.Username == id);
+            return await _service.isIdExist(id);
         }
     }
 }

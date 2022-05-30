@@ -7,34 +7,34 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using advanced_programming_2_server_side_exercise.Data;
 using advanced_programming_2_server_side_exercise.Models;
+using advanced_programming_2_server_side_exercise.Services;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
     public class MessagesController : Controller
     {
-        private readonly advanced_programming_2_server_side_exerciseContext _context;
+        private readonly IMessageService _service;
 
         public MessagesController(advanced_programming_2_server_side_exerciseContext context)
         {
-            _context = context;
+            _service = new MessageService(context);
         }
 
         // GET: Messages
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Message.ToListAsync());
+            return View(await _service.GetAll());
         }
 
         // GET: Messages/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Message == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var message = await _service.Get((int)id);
             if (message == null)
             {
                 return NotFound();
@@ -58,8 +58,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(message);
-                await _context.SaveChangesAsync();
+                await _service.Create(message.FromUsername, message.ToUsername, message.Content, message.Created);
                 return RedirectToAction(nameof(Index));
             }
             return View(message);
@@ -68,12 +67,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Messages/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Message == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message.FindAsync(id);
+            var message = await _service.Get((int)id);
             if (message == null)
             {
                 return NotFound();
@@ -97,12 +96,11 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 try
                 {
-                    _context.Update(message);
-                    await _context.SaveChangesAsync();
+                    await _service.Edit(message);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MessageExists(message.Id))
+                    if (!await MessageExists(message.Id))
                     {
                         return NotFound();
                     }
@@ -119,13 +117,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Messages/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Message == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var message = await _context.Message
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var message = await _service.Get((int)id);
             if (message == null)
             {
                 return NotFound();
@@ -139,23 +136,21 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Message == null)
+            if (_service == null)
             {
                 return Problem("Entity set 'advanced_programming_2_server_side_exerciseContext.Message'  is null.");
             }
-            var message = await _context.Message.FindAsync(id);
+            var message = await _service.Get(id);
             if (message != null)
             {
-                _context.Message.Remove(message);
+                await _service.Delete(id);
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MessageExists(int id)
+        private async Task<bool> MessageExists(int id)
         {
-          return _context.Message.Any(e => e.Id == id);
+            return await _service.isIdExist(id);
         }
     }
 }

@@ -4,6 +4,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using advanced_programming_2_server_side_exercise.Data;
+using static Microsoft.Extensions.Hosting.IHost;
+using advanced_programming_2_server_side_exercise.Services;
+
+IHost host = Host.CreateDefaultBuilder(args)
+  .ConfigureServices((_, services) =>
+      services.AddTransient<IContactService, ContactService>()
+          .AddTransient<IMessageService, MessageService>()
+          .AddTransient<IReviewService, ReviewService>()
+          .AddTransient<IUserService, UserService>())
+  .Build();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<advanced_programming_2_server_side_exerciseContext>(options =>

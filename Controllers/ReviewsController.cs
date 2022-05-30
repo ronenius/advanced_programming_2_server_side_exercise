@@ -7,34 +7,34 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using advanced_programming_2_server_side_exercise.Data;
 using advanced_programming_2_server_side_exercise.Models;
+using advanced_programming_2_server_side_exercise.Services;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
     public class ReviewsController : Controller
     {
-        private readonly advanced_programming_2_server_side_exerciseContext _context;
+        private readonly IReviewService _service;
 
         public ReviewsController(advanced_programming_2_server_side_exerciseContext context)
         {
-            _context = context;
+            _service = new ReviewService(context);
         }
 
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Review.ToListAsync());
+            return View(await _service.GetAll());
         }
 
         // GET: Reviews/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Review == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var review = await _context.Review
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var review = await _service.Get((int)id);
             if (review == null)
             {
                 return NotFound();
@@ -59,8 +59,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             if (ModelState.IsValid)
             {
                 review.DateTime = DateTime.Now;
-                _context.Add(review);
-                await _context.SaveChangesAsync();
+                await _service.Create(review.Score, review.Feedback, review.Name, DateTime.Now);
                 return RedirectToAction(nameof(Index));
             }
             return View(review);
@@ -69,12 +68,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Reviews/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Review == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var review = await _context.Review.FindAsync(id);
+            var review = await _service.Get((int)id);
             if (review == null)
             {
                 return NotFound();
@@ -98,12 +97,11 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 try
                 {
-                    _context.Update(review);
-                    await _context.SaveChangesAsync();
+                    await _service.Edit(review);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReviewExists(review.Id))
+                    if (!await ReviewExists(review.Id))
                     {
                         return NotFound();
                     }
@@ -120,13 +118,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Reviews/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Review == null)
+            if (id == null || _service == null)
             {
                 return NotFound();
             }
 
-            var review = await _context.Review
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var review = await _service.Get((int)id);
             if (review == null)
             {
                 return NotFound();
@@ -140,23 +137,21 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Review == null)
+            if (_service == null)
             {
                 return Problem("Entity set 'advanced_programming_2_server_side_exerciseContext.Review'  is null.");
             }
-            var review = await _context.Review.FindAsync(id);
+            var review = await _service.Get(id);
             if (review != null)
             {
-                _context.Review.Remove(review);
+                await _service.Delete(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ReviewExists(int id)
+        private async Task<bool> ReviewExists(int id)
         {
-            return _context.Review.Any(e => e.Id == id);
+            return await _service.isIdExist(id);
         }
     }
 }
