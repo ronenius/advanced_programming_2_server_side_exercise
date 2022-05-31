@@ -8,149 +8,203 @@ using Microsoft.EntityFrameworkCore;
 using advanced_programming_2_server_side_exercise.Data;
 using advanced_programming_2_server_side_exercise.Models;
 using advanced_programming_2_server_side_exercise.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Hosting.Server;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class ContactsController : Controller
     {
-        private readonly IContactService _service;
+        private readonly IContactService _contactService;
+        private readonly IMessageService _messageService;
+        private readonly IConfiguration _configuration;
+        private readonly string _username;
+        private readonly string _server;
 
-        public ContactsController(advanced_programming_2_server_side_exerciseContext context)
+        public ContactsController(advanced_programming_2_server_side_exerciseContext context, IConfiguration config)
         {
-            _service = new ContactService(context);
-        }
-
-        // GET: Contacts
-        public async Task<IActionResult> Index()
-        {
-            return View(await _service.GetAll());
-        }
-
-        // GET: Contacts/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null || _service == null)
+            _contactService = new ContactService(context);
+            _messageService = new MessageService(context);
+            _configuration = config;
+            List<Claim> claims = ((ClaimsIdentity)HttpContext.User.Identity).Claims.ToList();
+            foreach (Claim claim in claims)
             {
-                return NotFound();
-            }
-
-            var contact = await _service.Get(id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
-
-            return View(contact);
-        }
-
-        // GET: Contacts/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Contacts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ContactServer,ContactNickname")] Contact contact)
-        {
-            if (ModelState.IsValid)
-            {
-                await _service.Create("ronen", contact.Id, contact.ContactServer, contact.ContactNickname);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(contact);
-        }
-
-        // GET: Contacts/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null || _service == null)
-            {
-                return NotFound();
-            }
-
-            var contact = await _service.Get(id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
-            return View(contact);
-        }
-
-        // POST: Contacts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,ContactServer,ContactNickname")] Contact contact)
-        {
-            if (id != contact.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (claim.Type == "UserId")
                 {
-                    await _service.Edit(contact);
+                    _username = claim.Value;
+                    break;
                 }
-                catch (DbUpdateConcurrencyException)
+            }
+            _server = Request.Host.Host + ":" + Request.Host.Port;
+        }
+
+        // GET: api/Contacts
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            List<Contact> contacts = await _contactService.GetAll();
+            List<ContactAPI> contactsApi = new List<ContactAPI>();
+            foreach (Contact contact in contacts)
+            {
+                string[] usernames = contact.Id.Split(';');
+                if (_username == usernames[0])
                 {
-                    if (!await ContactExists(contact.Id))
+                    List<Message> messages = contact.Messages;
+                    string lastMessage = null;
+                    DateTime? lastDate = null;
+                    if (messages.Count > 0)
                     {
-                        return NotFound();
+                        lastMessage = messages[messages.Count - 1].Content;
+                        lastDate = messages[messages.Count - 1].Created;
+                    }
+                    contactsApi.Add(new ContactAPI(usernames[1], contact.ContactNickname, contact.ContactServer, lastMessage, lastDate));
+                }
+            }
+            return Json(contactsApi);
+        }
+
+        // GET: api/Contacts/id
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetId(string id)
+        {
+            List<Contact> contacts = await _contactService.GetAll();
+            foreach (Contact contact in contacts)
+            {
+                string[] usernames = contact.Id.Split(';');
+                if (_username == usernames[0])
+                {
+                    if (id == usernames[1])
+                    {
+                        List<Message> messages = contact.Messages;
+                        string lastMessage = null;
+                        DateTime? lastDate = null;
+                        if (messages.Count > 0)
+                        {
+                            lastMessage = messages[messages.Count - 1].Content;
+                            lastDate = messages[messages.Count - 1].Created;
+                        }
+                        return Json(new ContactAPI(usernames[1], contact.ContactNickname, contact.ContactServer, lastMessage, lastDate));
+                    }
+                }
+            }
+            return NotFound();
+        }
+
+        // POST: api/Contacts
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Post(string id, string name, string server)
+        {
+            await _contactService.Create(_username, id, server, name);
+            return Created(_server + "/api/contacts/" + id, new ContactAPI(id, name, server, null, null));
+
+        }
+
+        // DELETE: api/Contacts/id
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteContact(string id)
+        {
+            var contact = await _contactService.Get(_username, id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            await _contactService.Delete(id);
+            return NoContent();
+        }
+
+        // PUT: api/Contacts/id
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(string id, string name, string server)
+        {
+            var contact = await _contactService.Get(_username, id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            contact.ContactNickname = name;
+            contact.ContactServer = server;
+            await _contactService.Edit(contact);
+            return NoContent();
+        }
+
+        // GET: api/contacts/id/messages
+        [HttpGet("{id}/messages")]
+        public async Task<IActionResult> GetMessages(string id)
+        {
+            List<Message> messages = await _messageService.GetAll();
+            List<MessageAPI> messagesAPI = new List<MessageAPI>();
+            foreach (Message message in messages)
+            {
+                if ((_username == message.FromUsername && id == message.ToUsername) || (_username == message.ToUsername && id == message.FromUsername))
+                {
+                    if (_username == message.FromUsername)
+                    {
+                        messagesAPI.Add(new MessageAPI(message.Id, message.Content, true, message.Created));
                     }
                     else
                     {
-                        throw;
+                        messagesAPI.Add(new MessageAPI(message.Id, message.Content, false, message.Created));
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(contact);
+            return Json(messagesAPI);
         }
 
-        // GET: Contacts/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        // GET: api/contacts/id/messages/id2
+        [HttpGet("{id}/messages/{id2}")]
+        public async Task<IActionResult> GetMessage(string id, int id2)
         {
-            if (id == null || _service == null)
+            Message message = await _messageService.Get(id2);
+            if (message == null)
             {
                 return NotFound();
             }
-
-            var contact = await _service.Get(id);
-            if (contact == null)
+            if (_username == message.FromUsername)
             {
-                return NotFound();
+                return Json(new MessageAPI(id2, message.Content, true, message.Created));
             }
-
-            return View(contact);
+            return Json(new MessageAPI(id2, message.Content, false, message.Created));
         }
 
-        // POST: Contacts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: api/contacts/id/messages
+        [HttpPost("{id}/messages")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> PostMessage(string id, string content)
         {
-            if (_service == null)
-            {
-                return Problem("Entity set 'advanced_programming_2_server_side_exerciseContext.Contact'  is null.");
-            }
-            var contact = await _service.Get(id);
-            if (contact != null)
-            {
-                await _service.Delete(id);
-            }
-            return RedirectToAction(nameof(Index));
+            await _messageService.Create(_username, id, content, DateTime.Now);
+            return Created(_server + "/api/contacts/" + id + "/messages", new MessageAPI(null, content, true, DateTime.Now));
         }
 
-        private async Task<bool> ContactExists(string id)
+        // DELETE: api/contacts/id/messages/id2
+        [HttpDelete("{id}/messages/{id2}")]
+        public async Task<IActionResult> DeleteMessage(string id, int id2)
         {
-            return await _service.isIdExist(id);
+            Message message = await _messageService.Get(id2);
+            if (message == null)
+            {
+                return NotFound();
+            }
+            await _messageService.Delete(id2);
+            return NoContent();
+        }
+
+        // PUT: api/contacts/id/messages/id2
+        [HttpPut("{id}/messages/{id2}")]
+        public async Task<IActionResult> EditMessage(string id, int id2, string content)
+        {
+            Message message = await _messageService.Get(id2);
+            if (message == null)
+            {
+                return NotFound();
+            }
+            message.Content = content;
+            await _messageService.Edit(message);
+            return NoContent();
         }
     }
 }
