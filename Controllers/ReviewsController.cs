@@ -23,6 +23,17 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // GET: Reviews
         public async Task<IActionResult> Index()
         {
+            List<Review> reviews = await _service.GetAll();
+            int totalScore = 0;
+            int numReviews = 0;
+            foreach (Review currReview in reviews)
+            {
+                totalScore += currReview.Score;
+                numReviews++;
+            }
+            double averageScore = (double)totalScore / (double)numReviews;
+            averageScore = (double)System.Math.Round(averageScore, 2);
+            ViewBag.AverageScore = averageScore.ToString();
             return View(await _service.GetAll());
         }
 
@@ -86,7 +97,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Score,Feedback,Name,DateTime")] Review review)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Score,Feedback,Name")] Review review)
         {
             if (id != review.Id)
             {
@@ -97,6 +108,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             {
                 try
                 {
+                    review.DateTime = DateTime.Now;
                     await _service.Edit(review);
                 }
                 catch (DbUpdateConcurrencyException)
