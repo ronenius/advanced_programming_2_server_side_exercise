@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Hosting.Server;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class InvitationsController : Controller
@@ -34,6 +33,11 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(string from, string to, string server)
         {
+            Contact contact = await _contactService.Get(to, from);
+            if (contact != null)
+            {
+                return Conflict();
+            }
             List<User> users = await _userService.GetAll();
             foreach (User user in users)
             {
