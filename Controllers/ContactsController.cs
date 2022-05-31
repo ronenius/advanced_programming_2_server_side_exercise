@@ -21,7 +21,6 @@ namespace advanced_programming_2_server_side_exercise.Controllers
     {
         private readonly IContactService _contactService;
         private readonly IMessageService _messageService;
-        private readonly IConfiguration _configuration;
         private readonly string _username;
         private readonly string _server;
 
@@ -29,7 +28,6 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         {
             _contactService = new ContactService(context);
             _messageService = new MessageService(context);
-            _configuration = config;
             List<Claim> claims = ((ClaimsIdentity)HttpContext.User.Identity).Claims.ToList();
             foreach (Claim claim in claims)
             {
