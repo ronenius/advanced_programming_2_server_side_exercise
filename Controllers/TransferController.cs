@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Hosting.Server;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TransferController : Controller

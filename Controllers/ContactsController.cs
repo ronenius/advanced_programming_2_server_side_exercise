@@ -99,6 +99,11 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post(string id, string name, string server)
         {
+            Contact contact = await _contactService.Get(_username, id);
+            if (contact != null)
+            {
+                return Conflict();
+            }
             await _contactService.Create(_username, id, server, name);
             return Created(_server + "/api/contacts/" + id, new ContactAPI(id, name, server, null, null));
 
