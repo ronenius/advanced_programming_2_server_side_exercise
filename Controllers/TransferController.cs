@@ -11,6 +11,7 @@ using advanced_programming_2_server_side_exercise.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting.Server;
+using advanced_programming_2_server_side_exercise.Hubs;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -39,6 +40,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 if (contact.Id == to + ";" + from)
                 {
                     await _messageService.Create(from, to, content, DateTime.Now);
+                    MyHub myHub = new MyHub();
+                    await myHub.NewMessage();
                     return Created(_server + "/api/contacts/" + from + "/messages", new MessageAPI(null, content, false, DateTime.Now));
                 }
             }

@@ -11,6 +11,7 @@ using advanced_programming_2_server_side_exercise.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting.Server;
+using advanced_programming_2_server_side_exercise.Hubs;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -44,6 +45,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 if (to == user.Username)
                 {
                     await _contactService.Create(to, from, server, from);
+                    MyHub myHub = new MyHub();
+                    await myHub.NewContact();
                     return Created(_server + "/api/contacts/" + from, new ContactAPI(to, from, server, null, null));
                 }
             }

@@ -11,6 +11,7 @@ using advanced_programming_2_server_side_exercise.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting.Server;
+using advanced_programming_2_server_side_exercise.Hubs;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -103,6 +104,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return Conflict();
             }
             await _contactService.Create(_username, id, server, name);
+            MyHub myHub = new MyHub();
+            await myHub.NewContact();
             return Created(_server + "/api/contacts/" + id, new ContactAPI(id, name, server, null, null));
 
         }
@@ -117,6 +120,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return NotFound();
             }
             await _contactService.Delete(id);
+            MyHub myHub = new MyHub();
+            await myHub.NewContact();
             return NoContent();
         }
 
@@ -132,6 +137,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             contact.ContactNickname = name;
             contact.ContactServer = server;
             await _contactService.Edit(contact);
+            MyHub myHub = new MyHub();
+            await myHub.NewContact();
             return NoContent();
         }
 
@@ -180,6 +187,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         public async Task<IActionResult> PostMessage(string id, string content)
         {
             await _messageService.Create(_username, id, content, DateTime.Now);
+            MyHub myHub = new MyHub();
+            await myHub.NewMessage();
             return Created(_server + "/api/contacts/" + id + "/messages", new MessageAPI(null, content, true, DateTime.Now));
         }
 
@@ -193,6 +202,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return NotFound();
             }
             await _messageService.Delete(id2);
+            MyHub myHub = new MyHub();
+            await myHub.NewMessage();
             return NoContent();
         }
 
@@ -207,6 +218,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             }
             message.Content = content;
             await _messageService.Edit(message);
+            MyHub myHub = new MyHub();
+            await myHub.NewMessage();
             return NoContent();
         }
     }

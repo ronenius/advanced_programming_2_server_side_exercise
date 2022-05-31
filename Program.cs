@@ -6,14 +6,7 @@ using System.Text;
 using advanced_programming_2_server_side_exercise.Data;
 using static Microsoft.Extensions.Hosting.IHost;
 using advanced_programming_2_server_side_exercise.Services;
-
-IHost host = Host.CreateDefaultBuilder(args)
-  .ConfigureServices((_, services) =>
-      services.AddTransient<IContactService, ContactService>()
-          .AddTransient<IMessageService, MessageService>()
-          .AddTransient<IReviewService, ReviewService>()
-          .AddTransient<IUserService, UserService>())
-  .Build();
+using advanced_programming_2_server_side_exercise.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<advanced_programming_2_server_side_exerciseContext>(options =>
@@ -48,6 +41,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -69,5 +64,10 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Reviews}/{action=Index}/{id?}");
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<MyHub>("/myHub");
+});
 
 app.Run();
