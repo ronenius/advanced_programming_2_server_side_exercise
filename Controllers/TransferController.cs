@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting.Server;
 using advanced_programming_2_server_side_exercise.Hubs;
+using advanced_programming_2_server_side_exercise.APIObjects;
+using Microsoft.AspNet.SignalR.Client;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -32,17 +34,20 @@ namespace advanced_programming_2_server_side_exercise.Controllers
 
         // POST: api/transfer
         [HttpPost]
-        public async Task<IActionResult> Post(string from, string to, string content)
+        public async Task<IActionResult> Post([Bind("From,To,Content")] NewTransfer newTransfer)
         {
             List<Contact> contacts = await _contactService.GetAll();
             foreach (Contact contact in contacts)
             {
-                if (contact.Id == to + ";" + from)
+                if (contact.Id == newTransfer.To + ";" + newTransfer.From)
                 {
-                    await _messageService.Create(from, to, content, DateTime.Now);
-                    MyHub myHub = new MyHub();
-                    await myHub.NewMessage();
-                    return Created(_server + "/api/contacts/" + from + "/messages", new MessageAPI(null, content, false, DateTime.Now));
+                    await _messageService.Create(newTransfer.From, newTransfer.To, newTransfer.Content, DateTime.Now);
+                    /*var connection = new HubConnection("/myHub");
+                    var myHub = connection.CreateHubProxy("MyHub");
+                    await connection.Start();
+                    await myHub.Invoke("NewMessage");
+                    connection.Stop();*/
+                    return Created(_server + "/api/contacts/" + newTransfer.From + "/messages", new MessageAPI(null, newTransfer.Content, false, DateTime.Now));
                 }
             }
             return NotFound();

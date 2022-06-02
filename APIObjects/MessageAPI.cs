@@ -2,16 +2,16 @@
 {
     public class MessageAPI
     {
-        public int? Id { get; set; }
-        public string Content { get; set; }
-        public bool IsSent { get; set; }
+        public int? Id { get; set; } = null;
+        public string Content { get; set; } = null;
+        public bool Sent { get; set; }
         public DateTime Created { get; set; }
 
-        public MessageAPI(int? id, string content, bool isSent, DateTime created)
+        public MessageAPI(int? id, string content, bool sent, DateTime created)
         {
             Id = id;
             Content = content;
-            IsSent = isSent;
+            Sent = sent;
             Created = created;
         }
     }

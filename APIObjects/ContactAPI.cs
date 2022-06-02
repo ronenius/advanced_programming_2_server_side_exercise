@@ -13,20 +13,20 @@ namespace advanced_programming_2_server_side_exercise.Models
 
         public string last { get; set; }
 
-        public string lastDate { get; set; }
+        public string lastdate { get; set; }
 
-        public ContactAPI(string id, string name, string server, string last, DateTime? lastDate)
+        public ContactAPI(string id, string name, string server, string last, DateTime? lastdate)
         {
             this.id = id;
             this.name = name;
             this.server = server;
             this.last = last;
-            if (lastDate != null)
+            if (lastdate != null)
             {
-                this.lastDate = ((DateTime)lastDate).ToString("o");
-                this.lastDate = this.lastDate.Substring(0, this.lastDate.Length - 2);
+                this.lastdate = ((DateTime)lastdate).ToString("o");
+                this.lastdate = this.lastdate.Substring(0, this.lastdate.Length - 2);
             }
-            else this.lastDate = null;
+            else this.lastdate = null;
         }
     }
 }

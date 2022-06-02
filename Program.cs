@@ -31,14 +31,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Allow All",
-        builder =>
-        {
-            builder
-            .AllowAnyOrigin()
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.SetIsOriginAllowed(x => true)
+            .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowAnyHeader();
-        });
+            .AllowCredentials();
+    });
 });
 
 builder.Services.AddSignalR();
@@ -51,7 +50,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
-app.UseCors("Allow All");
+app.UseCors();
 
 app.UseStaticFiles();
 
@@ -65,9 +64,11 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Reviews}/{action=Index}/{id?}");
 
-app.UseEndpoints(endpoints =>
+app.MapHub<MyHub>("/myHub");
+
+/*app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<MyHub>("/myHub");
-});
+});*/
 
 app.Run();

@@ -30,31 +30,28 @@ namespace advanced_programming_2_server_side_exercise.Controllers
 
         // POST: Login
         [HttpPost]
-        public async Task<IActionResult> Login([Bind("Username,Password")] User user)
+        public async Task<IActionResult> Login([Bind("Username,Password")] UserAPI user)
         {
-            if (ModelState.IsValid)
+            List<User> users = await _service.GetAll();
+            foreach (User currUser in users)
             {
-                List<User> users = await _service.GetAll();
-                foreach (User currUser in users)
+                if (currUser.Username == user.Username && currUser.Password == user.Password)
                 {
-                    if (currUser.Username == user.Username && currUser.Password == user.Password)
-                    {
-                        var claims = new[] {
+                    var claims = new[] {
                             new Claim(JwtRegisteredClaimNames.Sub,_configuration["JWTParams:Subject"]),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                             new Claim(JwtRegisteredClaimNames.Iat,DateTime.UtcNow.ToString()),
                             new Claim("UserId",user.Username)
                         };
-                        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTParams:SecretKey"]));
-                        var mac = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                        var token = new JwtSecurityToken(
-                            _configuration["JWTParams:Issuer"],
-                            _configuration["JWTParams:Audience"],
-                            claims,
-                            expires: DateTime.UtcNow.AddMinutes(20),
-                            signingCredentials: mac);
-                        return Ok(new JwtSecurityTokenHandler().WriteToken(token));
-                    }
+                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTParams:SecretKey"]));
+                    var mac = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                    var token = new JwtSecurityToken(
+                        _configuration["JWTParams:Issuer"],
+                        _configuration["JWTParams:Audience"],
+                        claims,
+                        expires: DateTime.UtcNow.AddMinutes(20),
+                        signingCredentials: mac);
+                    return Ok(new JwtSecurityTokenHandler().WriteToken(token));
                 }
             }
             return BadRequest();

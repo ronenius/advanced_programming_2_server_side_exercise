@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using advanced_programming_2_server_side_exercise.Data;
@@ -12,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting.Server;
 using advanced_programming_2_server_side_exercise.Hubs;
+using advanced_programming_2_server_side_exercise.APIObjects;
+using Microsoft.AspNet.SignalR.Client;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -22,14 +25,12 @@ namespace advanced_programming_2_server_side_exercise.Controllers
     {
         private readonly IContactService _contactService;
         private readonly IMessageService _messageService;
-        private readonly string _username;
-        private readonly string _server;
 
-        public ContactsController(advanced_programming_2_server_side_exerciseContext context, IConfiguration config)
+        public ContactsController(advanced_programming_2_server_side_exerciseContext context)
         {
             _contactService = new ContactService(context);
             _messageService = new MessageService(context);
-            List<Claim> claims = ((ClaimsIdentity)HttpContext.User.Identity).Claims.ToList();
+            /*List<Claim> claims = ((ClaimsIdentity)HttpContext.User.Identity).Claims.ToList();
             foreach (Claim claim in claims)
             {
                 if (claim.Type == "UserId")
@@ -38,27 +39,42 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                     break;
                 }
             }
-            _server = Request.Host.Host + ":" + Request.Host.Port;
+            _server = Request.Host.Host + ":" + Request.Host.Port;*/
         }
 
-        // GET: api/Contacts
+        // GET: api/Contacts/username
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(string user)
         {
             List<Contact> contacts = await _contactService.GetAll();
             List<ContactAPI> contactsApi = new List<ContactAPI>();
             foreach (Contact contact in contacts)
             {
                 string[] usernames = contact.Id.Split(';');
-                if (_username == usernames[0])
+                if (user == usernames[0])
                 {
-                    List<Message> messages = contact.Messages;
+                    List<Message> messages = await _messageService.GetAll();
+                    List<MessageAPI> contactMessages = new List<MessageAPI>();
+                    foreach (Message message in messages)
+                    {
+                        if ((user == message.FromUsername && usernames[1] == message.ToUsername) || (user == message.ToUsername && usernames[1] == message.FromUsername))
+                        {
+                            if (user == message.FromUsername)
+                            {
+                                contactMessages.Add(new MessageAPI(message.Id, message.Content, true, message.Created));
+                            }
+                            else
+                            {
+                                contactMessages.Add(new MessageAPI(message.Id, message.Content, false, message.Created));
+                            }
+                        }
+                    }
                     string lastMessage = null;
                     DateTime? lastDate = null;
-                    if (messages.Count > 0)
+                    if (contactMessages.Count() > 0)
                     {
-                        lastMessage = messages[messages.Count - 1].Content;
-                        lastDate = messages[messages.Count - 1].Created;
+                        lastMessage = contactMessages[contactMessages.Count() - 1].Content;
+                        lastDate = contactMessages[contactMessages.Count() - 1].Created;
                     }
                     contactsApi.Add(new ContactAPI(usernames[1], contact.ContactNickname, contact.ContactServer, lastMessage, lastDate));
                 }
@@ -66,25 +82,40 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             return Json(contactsApi);
         }
 
-        // GET: api/Contacts/id
+        // GET: api/Contacts/username/id
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetId(string id)
+        public async Task<IActionResult> GetId(string id, string user)
         {
             List<Contact> contacts = await _contactService.GetAll();
             foreach (Contact contact in contacts)
             {
                 string[] usernames = contact.Id.Split(';');
-                if (_username == usernames[0])
+                if (user == usernames[0])
                 {
                     if (id == usernames[1])
                     {
-                        List<Message> messages = contact.Messages;
+                        List<Message> messages = await _messageService.GetAll();
+                        List<MessageAPI> contactMessages = new List<MessageAPI>();
+                        foreach (Message message in messages)
+                        {
+                            if ((user == message.FromUsername && usernames[1] == message.ToUsername) || (user == message.ToUsername && usernames[1] == message.FromUsername))
+                            {
+                                if (user == message.FromUsername)
+                                {
+                                    contactMessages.Add(new MessageAPI(message.Id, message.Content, true, message.Created));
+                                }
+                                else
+                                {
+                                    contactMessages.Add(new MessageAPI(message.Id, message.Content, false, message.Created));
+                                }
+                            }
+                        }
                         string lastMessage = null;
                         DateTime? lastDate = null;
-                        if (messages.Count > 0)
+                        if (contactMessages.Count() > 0)
                         {
-                            lastMessage = messages[messages.Count - 1].Content;
-                            lastDate = messages[messages.Count - 1].Created;
+                            lastMessage = contactMessages[contactMessages.Count() - 1].Content;
+                            lastDate = contactMessages[contactMessages.Count() - 1].Created;
                         }
                         return Json(new ContactAPI(usernames[1], contact.ContactNickname, contact.ContactServer, lastMessage, lastDate));
                     }
@@ -95,64 +126,72 @@ namespace advanced_programming_2_server_side_exercise.Controllers
 
         // POST: api/Contacts
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Post(string id, string name, string server)
+        public async Task<IActionResult> Post([Bind("Id,Name,Server,User")] NewContact newcontact)
         {
-            Contact contact = await _contactService.Get(_username, id);
+            Contact contact = await _contactService.Get(newcontact.User, newcontact.Id);
             if (contact != null)
             {
                 return Conflict();
             }
-            await _contactService.Create(_username, id, server, name);
-            MyHub myHub = new MyHub();
-            await myHub.NewContact();
-            return Created(_server + "/api/contacts/" + id, new ContactAPI(id, name, server, null, null));
+            await _contactService.Create(newcontact.User, newcontact.Id, newcontact.Server, newcontact.Name);
+            /*var connection = new HubConnection("/myHub");
+            var myHub = connection.CreateHubProxy("MyHub");
+            await connection.Start();
+            await myHub.Invoke("NewContact");
+            connection.Stop();*/
+            return Created("/api/contacts/" + newcontact.Id, new ContactAPI(newcontact.Id, newcontact.Name, newcontact.Server, null, null));
 
         }
 
         // DELETE: api/Contacts/id
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteContact(string id)
+        public async Task<IActionResult> DeleteContact(string id, [Bind("User")] NewContact newcontact)
         {
-            var contact = await _contactService.Get(_username, id);
+            var contact = await _contactService.Get(newcontact.User, id);
             if (contact == null)
             {
                 return NotFound();
             }
             await _contactService.Delete(id);
-            MyHub myHub = new MyHub();
-            await myHub.NewContact();
+            /*var connection = new HubConnection("/myHub");
+            var myHub = connection.CreateHubProxy("MyHub");
+            await connection.Start();
+            await myHub.Invoke("NewContact");
+            connection.Stop();*/
             return NoContent();
         }
 
         // PUT: api/Contacts/id
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id, string name, string server)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Server,User")] NewContact newcontact)
         {
-            var contact = await _contactService.Get(_username, id);
+            var contact = await _contactService.Get(newcontact.User, id);
             if (contact == null)
             {
                 return NotFound();
             }
-            contact.ContactNickname = name;
-            contact.ContactServer = server;
+            contact.ContactNickname = newcontact.Name;
+            contact.ContactServer = newcontact.Server;
             await _contactService.Edit(contact);
-            MyHub myHub = new MyHub();
-            await myHub.NewContact();
+            /*var connection = new HubConnection("/myHub");
+            var myHub = connection.CreateHubProxy("MyHub");
+            await connection.Start();
+            await myHub.Invoke("NewContact");
+            connection.Stop();*/
             return NoContent();
         }
 
         // GET: api/contacts/id/messages
         [HttpGet("{id}/messages")]
-        public async Task<IActionResult> GetMessages(string id)
+        public async Task<IActionResult> GetMessages(string id, string user)
         {
             List<Message> messages = await _messageService.GetAll();
             List<MessageAPI> messagesAPI = new List<MessageAPI>();
             foreach (Message message in messages)
             {
-                if ((_username == message.FromUsername && id == message.ToUsername) || (_username == message.ToUsername && id == message.FromUsername))
+                if ((user == message.FromUsername && id == message.ToUsername) || (user == message.ToUsername && id == message.FromUsername))
                 {
-                    if (_username == message.FromUsername)
+                    if (user == message.FromUsername)
                     {
                         messagesAPI.Add(new MessageAPI(message.Id, message.Content, true, message.Created));
                     }
@@ -167,14 +206,14 @@ namespace advanced_programming_2_server_side_exercise.Controllers
 
         // GET: api/contacts/id/messages/id2
         [HttpGet("{id}/messages/{id2}")]
-        public async Task<IActionResult> GetMessage(string id, int id2)
+        public async Task<IActionResult> GetMessage(string id, int id2, string user)
         {
             Message message = await _messageService.Get(id2);
             if (message == null)
             {
                 return NotFound();
             }
-            if (_username == message.FromUsername)
+            if (user == message.FromUsername)
             {
                 return Json(new MessageAPI(id2, message.Content, true, message.Created));
             }
@@ -183,18 +222,45 @@ namespace advanced_programming_2_server_side_exercise.Controllers
 
         // POST: api/contacts/id/messages
         [HttpPost("{id}/messages")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostMessage(string id, string content)
+        public async Task<IActionResult> PostMessage(string id, [Bind("User,Content")] NewMessage newMessage)
         {
-            await _messageService.Create(_username, id, content, DateTime.Now);
-            MyHub myHub = new MyHub();
-            await myHub.NewMessage();
-            return Created(_server + "/api/contacts/" + id + "/messages", new MessageAPI(null, content, true, DateTime.Now));
+            await _messageService.Create(newMessage.User, id, newMessage.Content, DateTime.Now);
+            /*var connection = new HubConnection("http://localhost:5178/");
+            var myHub = connection.CreateHubProxy("MyHub");
+            connection.Start().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Console.WriteLine("There was an error opening the connection:{0}",
+                                      task.Exception.GetBaseException());
+                }
+                else
+                {
+                    Console.WriteLine("Connected");
+                }
+
+            }).Wait();
+            myHub.Invoke<string>("NewMessage").ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Console.WriteLine("There was an error calling send: {0}",
+                                      task.Exception.GetBaseException());
+                }
+                else
+                {
+                    Console.WriteLine(task.Result);
+                }
+            }).Wait();
+            connection.Stop();*/
+            //MyHub myHub = new MyHub();
+            //await myHub.NewMessage();
+            return Created("/api/contacts/" + id + "/messages", new MessageAPI(null, newMessage.Content, true, DateTime.Now));
         }
 
         // DELETE: api/contacts/id/messages/id2
         [HttpDelete("{id}/messages/{id2}")]
-        public async Task<IActionResult> DeleteMessage(string id, int id2)
+        public async Task<IActionResult> DeleteMessage(string id, int id2, [Bind("User")] NewMessage newMessage)
         {
             Message message = await _messageService.Get(id2);
             if (message == null)
@@ -202,24 +268,30 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return NotFound();
             }
             await _messageService.Delete(id2);
-            MyHub myHub = new MyHub();
-            await myHub.NewMessage();
+            /*var connection = new HubConnection("/myHub");
+            var myHub = connection.CreateHubProxy("MyHub");
+            await connection.Start();
+            await myHub.Invoke("NewMessage");
+            connection.Stop();*/
             return NoContent();
         }
 
         // PUT: api/contacts/id/messages/id2
         [HttpPut("{id}/messages/{id2}")]
-        public async Task<IActionResult> EditMessage(string id, int id2, string content)
+        public async Task<IActionResult> EditMessage(string id, int id2, [Bind("User,Content")] NewMessage newMessage)
         {
             Message message = await _messageService.Get(id2);
             if (message == null)
             {
                 return NotFound();
             }
-            message.Content = content;
+            message.Content = newMessage.Content;
             await _messageService.Edit(message);
-            MyHub myHub = new MyHub();
-            await myHub.NewMessage();
+            /*var connection = new HubConnection("/myHub");
+            var myHub = connection.CreateHubProxy("MyHub");
+            await connection.Start();
+            await myHub.Invoke("NewMessage");
+            connection.Stop();*/
             return NoContent();
         }
     }

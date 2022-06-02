@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting.Server;
 using advanced_programming_2_server_side_exercise.Hubs;
+using advanced_programming_2_server_side_exercise.APIObjects;
+using Microsoft.AspNet.SignalR.Client;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -21,20 +23,18 @@ namespace advanced_programming_2_server_side_exercise.Controllers
     {
         private readonly IContactService _contactService;
         private readonly IUserService _userService;
-        private readonly string _server;
 
         public InvitationsController(advanced_programming_2_server_side_exerciseContext context)
         {
             _contactService = new ContactService(context);
             _userService = new UserService(context);
-            _server = Request.Host.Host + ":" + Request.Host.Port;
         }
 
         // POST: api/invitations
         [HttpPost]
-        public async Task<IActionResult> Post(string from, string to, string server)
+        public async Task<IActionResult> Post([Bind("From,To,Server")] NewInvitation newInvitation)
         {
-            Contact contact = await _contactService.Get(to, from);
+            Contact contact = await _contactService.Get(newInvitation.To, newInvitation.From);
             if (contact != null)
             {
                 return Conflict();
@@ -42,12 +42,15 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             List<User> users = await _userService.GetAll();
             foreach (User user in users)
             {
-                if (to == user.Username)
+                if (newInvitation.To == user.Username)
                 {
-                    await _contactService.Create(to, from, server, from);
-                    MyHub myHub = new MyHub();
-                    await myHub.NewContact();
-                    return Created(_server + "/api/contacts/" + from, new ContactAPI(to, from, server, null, null));
+                    await _contactService.Create(newInvitation.To, newInvitation.From, newInvitation.Server, newInvitation.From);
+                    /*var connection = new HubConnection("/myHub");
+                    var myHub = connection.CreateHubProxy("MyHub");
+                    await connection.Start();
+                    await myHub.Invoke("NewContact");
+                    connection.Stop();*/
+                    return Created("/api/contacts/" + newInvitation.From, new ContactAPI(newInvitation.To, newInvitation.From, newInvitation.Server, null, null));
                 }
             }
             return NotFound();

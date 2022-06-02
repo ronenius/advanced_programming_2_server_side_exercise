@@ -16,7 +16,7 @@ namespace advanced_programming_2_server_side_exercise.Services
         public async Task Create(string username, string contactUsername, string contactServer, string contactName)
         {
             Contact newContact = new Contact();
-            newContact.Id = username + ";" + contactName;
+            newContact.Id = username + ";" + contactUsername;
             newContact.ContactServer = contactServer;
             newContact.ContactNickname = contactName;
             newContact.Messages = new List<Message>();
