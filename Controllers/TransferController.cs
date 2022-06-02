@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using advanced_programming_2_server_side_exercise.Hubs;
 using advanced_programming_2_server_side_exercise.APIObjects;
 using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNetCore.SignalR;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -23,13 +24,13 @@ namespace advanced_programming_2_server_side_exercise.Controllers
     {
         private readonly IContactService _contactService;
         private readonly IMessageService _messageService;
-        private readonly string _server;
+        private readonly IHubContext<MyHub, IMyHub> _myHub;
 
-        public TransferController(advanced_programming_2_server_side_exerciseContext context)
+        public TransferController(advanced_programming_2_server_side_exerciseContext context, IHubContext<MyHub, IMyHub> myHub)
         {
             _contactService = new ContactService(context);
             _messageService = new MessageService(context);
-            _server = Request.Host.Host + ":" + Request.Host.Port;
+            _myHub = myHub;
         }
 
         // POST: api/transfer
@@ -42,12 +43,8 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 if (contact.Id == newTransfer.To + ";" + newTransfer.From)
                 {
                     await _messageService.Create(newTransfer.From, newTransfer.To, newTransfer.Content, DateTime.Now);
-                    /*var connection = new HubConnection("/myHub");
-                    var myHub = connection.CreateHubProxy("MyHub");
-                    await connection.Start();
-                    await myHub.Invoke("NewMessage");
-                    connection.Stop();*/
-                    return Created(_server + "/api/contacts/" + newTransfer.From + "/messages", new MessageAPI(null, newTransfer.Content, false, DateTime.Now));
+                    await _myHub.Clients.All.NewMessage();
+                    return Created("/api/contacts/" + newTransfer.From + "/messages", new MessageAPI(null, newTransfer.Content, false, DateTime.Now));
                 }
             }
             return NotFound();

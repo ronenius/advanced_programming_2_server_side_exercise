@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using advanced_programming_2_server_side_exercise.Hubs;
 using advanced_programming_2_server_side_exercise.APIObjects;
 using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNetCore.SignalR;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -23,11 +24,13 @@ namespace advanced_programming_2_server_side_exercise.Controllers
     {
         private readonly IContactService _contactService;
         private readonly IUserService _userService;
+        private readonly IHubContext<MyHub, IMyHub> _myHub;
 
-        public InvitationsController(advanced_programming_2_server_side_exerciseContext context)
+        public InvitationsController(advanced_programming_2_server_side_exerciseContext context, IHubContext<MyHub, IMyHub> myHub)
         {
             _contactService = new ContactService(context);
             _userService = new UserService(context);
+            _myHub = myHub;
         }
 
         // POST: api/invitations
@@ -45,11 +48,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 if (newInvitation.To == user.Username)
                 {
                     await _contactService.Create(newInvitation.To, newInvitation.From, newInvitation.Server, newInvitation.From);
-                    /*var connection = new HubConnection("/myHub");
-                    var myHub = connection.CreateHubProxy("MyHub");
-                    await connection.Start();
-                    await myHub.Invoke("NewContact");
-                    connection.Stop();*/
+                    await _myHub.Clients.All.NewContact();
                     return Created("/api/contacts/" + newInvitation.From, new ContactAPI(newInvitation.To, newInvitation.From, newInvitation.Server, null, null));
                 }
             }

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using advanced_programming_2_server_side_exercise.Hubs;
 using advanced_programming_2_server_side_exercise.APIObjects;
 using Microsoft.AspNet.SignalR.Client;
+using Microsoft.AspNetCore.SignalR;
 
 namespace advanced_programming_2_server_side_exercise.Controllers
 {
@@ -25,21 +26,13 @@ namespace advanced_programming_2_server_side_exercise.Controllers
     {
         private readonly IContactService _contactService;
         private readonly IMessageService _messageService;
+        private readonly IHubContext<MyHub, IMyHub> _myHub;
 
-        public ContactsController(advanced_programming_2_server_side_exerciseContext context)
+        public ContactsController(advanced_programming_2_server_side_exerciseContext context, IHubContext<MyHub, IMyHub> myHub)
         {
             _contactService = new ContactService(context);
             _messageService = new MessageService(context);
-            /*List<Claim> claims = ((ClaimsIdentity)HttpContext.User.Identity).Claims.ToList();
-            foreach (Claim claim in claims)
-            {
-                if (claim.Type == "UserId")
-                {
-                    _username = claim.Value;
-                    break;
-                }
-            }
-            _server = Request.Host.Host + ":" + Request.Host.Port;*/
+            _myHub = myHub;
         }
 
         // GET: api/Contacts/username
@@ -134,11 +127,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return Conflict();
             }
             await _contactService.Create(newcontact.User, newcontact.Id, newcontact.Server, newcontact.Name);
-            /*var connection = new HubConnection("/myHub");
-            var myHub = connection.CreateHubProxy("MyHub");
-            await connection.Start();
-            await myHub.Invoke("NewContact");
-            connection.Stop();*/
+            await _myHub.Clients.All.NewContact();
             return Created("/api/contacts/" + newcontact.Id, new ContactAPI(newcontact.Id, newcontact.Name, newcontact.Server, null, null));
 
         }
@@ -153,11 +142,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return NotFound();
             }
             await _contactService.Delete(id);
-            /*var connection = new HubConnection("/myHub");
-            var myHub = connection.CreateHubProxy("MyHub");
-            await connection.Start();
-            await myHub.Invoke("NewContact");
-            connection.Stop();*/
+            await _myHub.Clients.All.NewContact();
             return NoContent();
         }
 
@@ -173,11 +158,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             contact.ContactNickname = newcontact.Name;
             contact.ContactServer = newcontact.Server;
             await _contactService.Edit(contact);
-            /*var connection = new HubConnection("/myHub");
-            var myHub = connection.CreateHubProxy("MyHub");
-            await connection.Start();
-            await myHub.Invoke("NewContact");
-            connection.Stop();*/
+            await _myHub.Clients.All.NewContact();
             return NoContent();
         }
 
@@ -225,36 +206,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
         public async Task<IActionResult> PostMessage(string id, [Bind("User,Content")] NewMessage newMessage)
         {
             await _messageService.Create(newMessage.User, id, newMessage.Content, DateTime.Now);
-            /*var connection = new HubConnection("http://localhost:5178/");
-            var myHub = connection.CreateHubProxy("MyHub");
-            connection.Start().ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    Console.WriteLine("There was an error opening the connection:{0}",
-                                      task.Exception.GetBaseException());
-                }
-                else
-                {
-                    Console.WriteLine("Connected");
-                }
-
-            }).Wait();
-            myHub.Invoke<string>("NewMessage").ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    Console.WriteLine("There was an error calling send: {0}",
-                                      task.Exception.GetBaseException());
-                }
-                else
-                {
-                    Console.WriteLine(task.Result);
-                }
-            }).Wait();
-            connection.Stop();*/
-            //MyHub myHub = new MyHub();
-            //await myHub.NewMessage();
+            await _myHub.Clients.All.NewMessage();
             return Created("/api/contacts/" + id + "/messages", new MessageAPI(null, newMessage.Content, true, DateTime.Now));
         }
 
@@ -268,11 +220,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
                 return NotFound();
             }
             await _messageService.Delete(id2);
-            /*var connection = new HubConnection("/myHub");
-            var myHub = connection.CreateHubProxy("MyHub");
-            await connection.Start();
-            await myHub.Invoke("NewMessage");
-            connection.Stop();*/
+            await _myHub.Clients.All.NewMessage();
             return NoContent();
         }
 
@@ -287,11 +235,7 @@ namespace advanced_programming_2_server_side_exercise.Controllers
             }
             message.Content = newMessage.Content;
             await _messageService.Edit(message);
-            /*var connection = new HubConnection("/myHub");
-            var myHub = connection.CreateHubProxy("MyHub");
-            await connection.Start();
-            await myHub.Invoke("NewMessage");
-            connection.Stop();*/
+            await _myHub.Clients.All.NewMessage();
             return NoContent();
         }
     }
