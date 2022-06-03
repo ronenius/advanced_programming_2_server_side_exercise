@@ -1,0 +1,9 @@
+#inputPicture{
+    margin-bottom: 2vh;
+}
+
+#modalButton{
+    border: none;
+    background-color:aliceblue;
+    border-radius: 50%!important;
+}

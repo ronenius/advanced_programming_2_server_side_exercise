@@ -1,0 +1,67 @@
+#registerform {
+    background-color:aliceblue;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#registerblock {
+    height: 100vh;
+    padding-top: 8vh;
+    width: 40vh;
+}
+
+#floatingUsername2{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#floatingPassword2{
+    margin-bottom: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#floatingVerifyPassword{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#floatingNickname{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-bottom: 2vh;
+}
+
+
+.btn-grad {background-image: linear-gradient(to bottom, #3a7bd5  5%,#00d2ff 100%)}
+.btn-grad {
+   text-transform: uppercase;
+   transition: 0.5s;
+   background-size: 200% auto;
+   color: white;            
+   box-shadow: 0 0 20px #eee;
+   border-radius: 10px;
+   display: block;
+   height: 100%;
+}
+ 
+#validationText2 {
+    margin-bottom: 0vh;
+    text-align: left;
+    color: red;
+}
+
+a{
+    text-decoration: none;
+}
+
+#buttons2{
+    padding: 0;
+}
